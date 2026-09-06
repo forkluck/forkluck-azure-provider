@@ -55,5 +55,8 @@
     "eslint": "^10.0.2",
     "globals": "^17.4.0",
     "purgecss": "^8.0.0"
+  },
+  "overrides": {
+    "qs": "6.16.0"
   }
 }
