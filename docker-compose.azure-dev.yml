@@ -33,6 +33,9 @@ services:
   fake-acs:
     build: .
     command: node scripts/fake-acs-email.js
+    # The image ships only server.js and lib/; the stub lives in scripts/.
+    volumes:
+      - ./scripts:/app/scripts:ro
     depends_on:
       azurite:
         condition: service_healthy

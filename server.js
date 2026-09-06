@@ -1,29 +1,17 @@
 var crypto = require('crypto');
-var express = require('express');
 var config = require('./lib/config');
-var authMiddleware = require('./lib/auth');
 var {
   initDb,
   closeDb,
-  getTableCounts,
   updateRuntimeHeartbeat,
   startCleanupTask
 } = require('./lib/db');
-var handleSendEmail = require('./lib/send-email');
-var handleGetEvents = require('./lib/events-api');
-var handleDeleteSuppression = require('./lib/suppression-api');
-var { createAdminRouter } = require('./lib/admin-dashboard');
+var { createApp } = require('./lib/app');
 var { startPolling, getPollerState } = require('./lib/event-poller');
 var { startNewsletterWorker, getWorkerState } = require('./lib/newsletter-worker');
 var { getProvider } = require('./lib/providers');
 
 var instanceId = crypto.randomUUID();
-
-function withAsync(handler) {
-  return function(req, res, next) {
-    Promise.resolve(handler(req, res, next)).catch(next);
-  };
-}
 
 function isApiRole() {
   return config.runtimeRole === 'api' || config.runtimeRole === 'all';
@@ -59,37 +47,13 @@ async function bootstrap() {
   await initDb();
   startCleanupTask();
 
-  var app = express();
+  var app = isApiRole() ? createApp({ getRuntimeStatus: buildRuntimeStatus }) : null;
   var server = null;
   var stopEventPoller = null;
   var stopNewsletterWorker = null;
   var heartbeatTimer = startHeartbeatLoop();
 
   if (isApiRole()) {
-    app.get('/health', withAsync(async function(_req, res) {
-      res.json({
-        status: 'ok',
-        mailProvider: config.mailProvider,
-        tables: await getTableCounts(),
-        // sesAccount is kept as the key name for dashboard/API compatibility.
-        sesAccount: await getProvider().account.getAccountStatus()
-      });
-    }));
-
-    app.use(config.adminBasePath, createAdminRouter(buildRuntimeStatus));
-    app.use('/v3', authMiddleware);
-    app.post('/v3/:domain/messages', withAsync(handleSendEmail));
-    app.get('/v3/:domain/events', withAsync(handleGetEvents));
-    app.get('/v3/:domain/events/:pageToken', withAsync(handleGetEvents));
-    app.delete('/v3/:domain/:type/:email', withAsync(handleDeleteSuppression));
-    app.use(function(err, _req, res, _next) {
-      console.error('API error:', err && err.message ? err.message : String(err));
-      res.status(500).json({
-        message: 'Internal server error',
-        error: err && err.message ? err.message : String(err)
-      });
-    });
-
     var described = getProvider().describe();
 
     server = app.listen(config.port, function() {

@@ -443,7 +443,7 @@ Small servers can skip MySQL entirely and use a SQLite file instead:
 | `SEND_BATCH_SIZE` | `1000` | Max recipients per Ghost-like worker batch |
 | `SEND_BATCH_CONCURRENCY` | `2` | Max parallel worker batches per send job |
 | `SUPPRESSION_RETENTION_DAYS` | `0` | Suppression retention (`0` = forever) |
-| `ADMIN_BASE_PATH` | `/ghost/mail` | Dashboard URL path |
+| `ADMIN_BASE_PATH` | `/ghost/mail` | Dashboard URL path. Plain segments only: letters, digits, `.`, `_`, `~`, `-` and `/` |
 | `GHOST_ADMIN_URL` | *(empty)* | Ghost HTTPS base URL for dashboard auth (required if using dashboard) |
 | `ALLOW_INSECURE_GHOST_ADMIN_URL` | `false` | Allow `http://` Ghost admin URL only for trusted local/private setups |
 | `NEWSLETTER_SEND_DLQ_URL` | *(empty)* | Optional DLQ URL for docs/ops parity |

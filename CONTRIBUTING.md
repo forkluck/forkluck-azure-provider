@@ -12,6 +12,7 @@ in the [README](README.md#local-azure-development).
 | SES send, queue, and event behavior | `lib/providers/ses/`, `test/ses-events.test.js` |
 | Durable newsletter delivery | `lib/newsletter-worker.js`, `test/send-retry.test.js` |
 | Dashboard and authentication | `lib/admin-dashboard.js`, `lib/auth.js` |
+| HTTP routes and request behavior | `lib/app.js`, `test/http-api.test.js` |
 | Storage | `lib/db-mysql.js`, `lib/db-sqlite.js`, `test/db-sqlite.test.js` |
 
 Preserve accepted-send identity on retries so a transient status failure cannot

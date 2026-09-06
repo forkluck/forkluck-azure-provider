@@ -70,7 +70,9 @@ async function pushEvent(event) {
   await queueClient.sendMessage(Buffer.from(JSON.stringify(event), 'utf8').toString('base64'));
 }
 
-app.post('/emails:send', function(req, res) {
+// A regular expression, because in a string path ":send" reads as a route
+// parameter and only matched the literal text by coincidence.
+app.post(/^\/emails:send$/, function(req, res) {
   var operationId = crypto.randomUUID();
   var message = req.body || {};
   var sender = message.senderAddress || 'news@example.com';
