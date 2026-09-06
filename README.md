@@ -234,6 +234,15 @@ If you want a Ghost-like `/opt/ghost-mail-bridge` deployment with separate API a
 
 ---
 
+### Redeploying on the Forkluck host
+
+`deploy/deploy-to-compose.sh` syncs a clean checkout to the host, rebuilds the
+image inside the Ghost compose project, restarts the api and worker, and waits
+for both health checks. It tags the running image `ghost-mail-bridge:rollback`
+first, so `deploy/deploy-to-compose.sh rollback` restores it without a rebuild.
+Host and paths are overridable through `BRIDGE_*` environment variables listed
+at the top of the script.
+
 ## Verify everything works
 
 Run through this checklist after setup:
