@@ -1,0 +1,8 @@
+node_modules/
+/docs/
+data/
+.env
+.env.*
+!.env.example
+!.env.advanced.example
+.DS_Store

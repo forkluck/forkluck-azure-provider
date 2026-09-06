@@ -1,0 +1,92 @@
+services:
+  mysql:
+    image: mysql:8.0.44@sha256:f37951fc3753a6a22d6c7bf6978c5e5fefcf6f31814d98c582524f98eae52b21
+    environment:
+      MYSQL_DATABASE: ghost_mail_bridge
+      MYSQL_USER: ghost_mail_bridge
+      MYSQL_PASSWORD: ghost_mail_bridge
+      MYSQL_ROOT_PASSWORD: change-me
+    volumes:
+      - mysql-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -u$$MYSQL_USER -p$$MYSQL_PASSWORD --silent"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+
+  ghost-mail-bridge:
+    build: .
+    # Or use a pre-built image:
+    # image: ghcr.io/ifrederico/ghost-mail-bridge:latest
+    depends_on:
+      mysql:
+        condition: service_healthy
+    ports:
+      - "127.0.0.1:3003:3003"
+    environment: &ghost_mail_bridge_env
+      MAIL_PROVIDER: ${MAIL_PROVIDER:-ses}
+      DATABASE_URL: ${DATABASE_URL:-mysql://ghost_mail_bridge:ghost_mail_bridge@mysql:3306/ghost_mail_bridge}
+      # AWS: required when MAIL_PROVIDER=ses
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID:-}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY:-}
+      AWS_REGION: ${AWS_REGION:-us-east-1}
+      SES_EVENTS_QUEUE_URL: ${SES_EVENTS_QUEUE_URL:-}
+      NEWSLETTER_SEND_QUEUE_URL: ${NEWSLETTER_SEND_QUEUE_URL:-}
+      NEWSLETTER_SEND_DLQ_URL: ${NEWSLETTER_SEND_DLQ_URL:-}
+      SES_CONFIGURATION_SET: ${SES_CONFIGURATION_SET:-ghost-mail-bridge}
+      # Azure: required when MAIL_PROVIDER=azure
+      AZURE_COMMUNICATION_CONNECTION_STRING: ${AZURE_COMMUNICATION_CONNECTION_STRING:-}
+      AZURE_STORAGE_CONNECTION_STRING: ${AZURE_STORAGE_CONNECTION_STRING:-}
+      AZURE_SEND_QUEUE_NAME: ${AZURE_SEND_QUEUE_NAME:-newsletter-send}
+      AZURE_EVENTS_QUEUE_NAME: ${AZURE_EVENTS_QUEUE_NAME:-mail-events}
+      AZURE_EMAIL_SENDER_ADDRESS: ${AZURE_EMAIL_SENDER_ADDRESS:-}
+      AZURE_EMAIL_RATE_PER_MINUTE: ${AZURE_EMAIL_RATE_PER_MINUTE:-30}
+      AZURE_EMAIL_RATE_PER_HOUR: ${AZURE_EMAIL_RATE_PER_HOUR:-100}
+      PROXY_API_KEY: ${PROXY_API_KEY}
+      MAILGUN_DOMAIN: ${MAILGUN_DOMAIN}
+      LOG_LEVEL: ${LOG_LEVEL:-info}
+      SEND_CONCURRENCY: ${SEND_CONCURRENCY:-10}
+      SEND_BATCH_SIZE: ${SEND_BATCH_SIZE:-1000}
+      SEND_BATCH_CONCURRENCY: ${SEND_BATCH_CONCURRENCY:-2}
+      SUPPRESSION_RETENTION_DAYS: ${SUPPRESSION_RETENTION_DAYS:-0}
+      ADMIN_BASE_PATH: ${ADMIN_BASE_PATH:-/ghost/mail}
+      GHOST_ADMIN_URL: ${GHOST_ADMIN_URL:-}
+      ALLOW_INSECURE_GHOST_ADMIN_URL: ${ALLOW_INSECURE_GHOST_ADMIN_URL:-}
+      GHOST_ACCEPT_VERSION: ${GHOST_ACCEPT_VERSION:-v6.0}
+      APP_ROLE: api
+    restart: unless-stopped
+    # If Ghost runs in a separate Docker Compose project, attach only the API
+    # service to Ghost's external network so Ghost can call
+    # http://ghost-mail-bridge:3003/v3 over the internal Docker network.
+    #
+    # Example:
+    # networks:
+    #   - default
+    #   - ghost_network
+
+  ghost-mail-bridge-worker:
+    build: .
+    # Or use the same pre-built image:
+    # image: ghcr.io/ifrederico/ghost-mail-bridge:latest
+    depends_on:
+      mysql:
+        condition: service_healthy
+    healthcheck:
+      disable: true
+    environment:
+      <<: *ghost_mail_bridge_env
+      APP_ROLE: worker
+    restart: unless-stopped
+
+volumes:
+  mysql-data:
+
+# Uncomment for a sidecar install next to the official ghost-docker stack.
+# Detect the real network name with:
+#   docker network ls --format '{{.Name}}' | grep ghost_network
+#
+# networks:
+#   ghost_network:
+#     external: true
+#     name: your_real_ghost_network_name

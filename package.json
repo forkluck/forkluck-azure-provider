@@ -1,0 +1,59 @@
+{
+  "name": "forkluck-azure-provider",
+  "version": "1.0.0",
+  "description": "Mailgun-compatible newsletter bridge for Ghost over Azure Communication Services Email or AWS SES",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "start:api": "APP_ROLE=api node server.js",
+    "start:worker": "APP_ROLE=worker node server.js",
+    "dev": "node --watch --env-file=.env server.js",
+    "dev:api": "APP_ROLE=api node --watch --env-file=.env server.js",
+    "dev:worker": "APP_ROLE=worker node --watch --env-file=.env server.js",
+    "lint": "eslint .",
+    "test": "node --test test/*.test.js",
+    "ghost:sync-mailgun-settings": "bash scripts/sync-ghost-mailgun-settings.sh",
+    "ghost:reset-mailgun-settings": "bash scripts/reset-ghost-mailgun-settings.sh",
+    "dev:fake-acs": "node scripts/fake-acs-email.js"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/forkluck/forkluck-azure-provider.git"
+  },
+  "keywords": [
+    "ghost",
+    "ses",
+    "aws",
+    "mailgun",
+    "proxy",
+    "newsletter",
+    "email",
+    "azure"
+  ],
+  "author": "Forkluck",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/forkluck/forkluck-azure-provider/issues"
+  },
+  "homepage": "https://github.com/forkluck/forkluck-azure-provider#readme",
+  "dependencies": {
+    "@aws-sdk/client-ses": "^3.700.0",
+    "@aws-sdk/client-sesv2": "^3.1003.0",
+    "@aws-sdk/client-sqs": "^3.700.0",
+    "@azure/communication-email": "^1.1.0",
+    "@azure/storage-queue": "^12.31.0",
+    "better-sqlite3": "^12.11.1",
+    "busboy": "^1.6.0",
+    "express": "^4.21.2",
+    "mysql2": "^3.12.0"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "eslint": "^10.0.2",
+    "globals": "^17.4.0",
+    "purgecss": "^8.0.0"
+  }
+}

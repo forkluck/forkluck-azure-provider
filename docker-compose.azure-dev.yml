@@ -1,0 +1,67 @@
+# Local Azure-mode development: MySQL + Azurite (Storage Queue emulator) +
+# a fake ACS Email endpoint. No Azure subscription required.
+#
+#   docker compose -f docker-compose.azure-dev.yml up --build
+#
+# The bridge listens on 127.0.0.1:3003 and the dashboard on /ghost/mail.
+
+services:
+  mysql:
+    image: mysql:8.0.44
+    environment:
+      MYSQL_DATABASE: ghost_mail_bridge
+      MYSQL_USER: ghost_mail_bridge
+      MYSQL_PASSWORD: ghost_mail_bridge
+      MYSQL_ROOT_PASSWORD: change-me
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -u$$MYSQL_USER -p$$MYSQL_PASSWORD --silent"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  azurite:
+    image: mcr.microsoft.com/azure-storage/azurite
+    command: azurite-queue --queueHost 0.0.0.0 --location /data
+    volumes:
+      - azurite-data:/data
+    healthcheck:
+      test: ["CMD-SHELL", "nc -z 127.0.0.1 10001 || exit 1"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  fake-acs:
+    build: .
+    command: node scripts/fake-acs-email.js
+    depends_on:
+      azurite:
+        condition: service_healthy
+    environment: &azure_dev_storage
+      AZURE_STORAGE_CONNECTION_STRING: >-
+        DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;QueueEndpoint=http://azurite:10001/devstoreaccount1;
+      AZURE_EVENTS_QUEUE_NAME: mail-events
+
+  ghost-mail-bridge:
+    build: .
+    depends_on:
+      mysql:
+        condition: service_healthy
+      azurite:
+        condition: service_healthy
+    ports:
+      - "127.0.0.1:3003:3003"
+    environment:
+      <<: *azure_dev_storage
+      MAIL_PROVIDER: azure
+      AZURE_COMMUNICATION_CONNECTION_STRING: endpoint=http://fake-acs:4010/;accesskey=ZmFrZWtleWZha2VrZXlmYWtla2V5ZmFrZWtleQ==
+      AZURE_EMAIL_RATE_PER_MINUTE: "600"
+      AZURE_EMAIL_RATE_PER_HOUR: "6000"
+      DATABASE_URL: mysql://ghost_mail_bridge:ghost_mail_bridge@mysql:3306/ghost_mail_bridge
+      PROXY_API_KEY: local-dev-key
+      MAILGUN_DOMAIN: example.com
+      DISABLE_ADMIN_AUTH: "1"
+      LOG_LEVEL: debug
+      APP_ROLE: all
+
+volumes:
+  azurite-data:

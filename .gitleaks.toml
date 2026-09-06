@@ -1,0 +1,15 @@
+title = "Mail bridge source scan"
+[extend]
+useDefault = true
+
+# Official public Azurite emulator credential and the fake ACS key. Exact
+# values only: production connection strings remain covered by every rule.
+[[allowlists]]
+description = "Local emulator keys in the Azure development compose file"
+condition = "AND"
+paths = ['''docker-compose\.azure-dev\.yml$''']
+regexTarget = "secret"
+regexes = [
+  '''^Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==$''',
+  '''^ZmFrZWtleWZha2VrZXlmYWtla2V5ZmFrZWtleQ==$''',
+]

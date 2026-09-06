@@ -1,0 +1,406 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Ghost Mail Bridge Dashboard Lab</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23111827' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M22 17a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V9.5C2 7 4 5 6.5 5H18c2.2 0 4 1.8 4 4v8Z'/%3E%3Cpolyline points='15,9 18,9 18,11'/%3E%3Cpath d='M6.5 5C9 5 11 7 11 9.5V17a2 2 0 0 1-2 2'/%3E%3Cline x1='6' x2='7' y1='10' y2='10'/%3E%3C/svg%3E" />
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <div class="shell">
+    <aside class="rail" data-sidebar="sidebar">
+      <div data-sidebar="content" class="sidebar-content">
+        <div class="sidebar-top">
+          <div class="brand">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="brand-icon lucide lucide-mailbox-icon lucide-mailbox" aria-hidden="true"><path d="M22 17a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V9.5C2 7 4 5 6.5 5H18c2.2 0 4 1.8 4 4v8Z"/><polyline points="15,9 18,9 18,11"/><path d="M6.5 5C9 5 11 7 11 9.5V17a2 2 0 0 1-2 2"/><line x1="6" x2="7" y1="10" y2="10"/></svg>
+            <span>SES Mail Bridge</span>
+          </div>
+
+          <div data-sidebar="group" class="shortcut-group">
+            <div data-sidebar="group-content">
+              <ul data-sidebar="menu">
+                <li data-sidebar="menu-item" class="group-with-action">
+                  <a data-sidebar="menu-button" class="menu-button-with-action" href="/ghost/">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                      <path d="M9 10h.01"></path>
+                      <path d="M15 10h.01"></path>
+                      <path d="M12 2a8 8 0 0 0-8 8v12l3-3 2.5 2.5L12 19l2.5 2.5L17 19l3 3V10a8 8 0 0 0-8-8z"></path>
+                    </svg>
+                    <span>Ghost admin</span>
+                  </a>
+                  <a class="menu-action" href="/ghost/" target="_blank" rel="noopener noreferrer" aria-label="Open Ghost Admin in new tab">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                      <path d="M15 3h6v6"></path>
+                      <path d="M10 14 21 3"></path>
+                      <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                    </svg>
+                  </a>
+                </li>
+                <li data-sidebar="menu-item" class="group-with-action">
+                  <a data-sidebar="menu-button" class="menu-button-with-action" href="/" data-site-link>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                      <rect x="2" y="4" width="20" height="16" rx="2"></rect>
+                      <path d="M10 4v4"></path>
+                      <path d="M2 8h20"></path>
+                      <path d="M6 4v4"></path>
+                    </svg>
+                    <span>View site</span>
+                  </a>
+                  <a class="menu-action" href="/" data-site-link rel="noopener noreferrer" target="_blank" aria-label="View site in new tab">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                      <path d="M15 3h6v6"></path>
+                      <path d="M10 14 21 3"></path>
+                      <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                    </svg>
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <div data-sidebar="group" class="primary-nav-group">
+            <div data-sidebar="group-content">
+              <ul data-sidebar="menu">
+                <li data-sidebar="menu-item">
+                  <a data-sidebar="menu-button" data-tab-target="overview" href="#overview">
+                    <svg viewBox="-0.75 -0.75 24 24" xmlns="http://www.w3.org/2000/svg" height="24" width="24" aria-hidden="true">
+                      <path d="m1.40625 4.453125 19.6875 0 0 14.0625 -19.6875 0Z" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"></path>
+                      <path d="m20.7759375 4.96875 -7.635 5.8725000000000005a3.10125 3.10125 0 0 1 -3.781875 0L1.7240625 4.96875" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"></path>
+                    </svg>
+                    <span>Email delivery</span>
+                  </a>
+                </li>
+                <li data-sidebar="menu-item">
+                  <a data-sidebar="menu-button" class="menu-button-with-badge" data-tab-target="health" href="#/health">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-heart-pulse-icon lucide-heart-pulse" aria-hidden="true"><path d="M2 9.5a5.5 5.5 0 0 1 9.591-3.676.56.56 0 0 0 .818 0A5.49 5.49 0 0 1 22 9.5c0 2.29-1.5 4-3 5.5l-5.492 5.313a2 2 0 0 1-3 .019L5 15c-1.5-1.5-3-3.2-3-5.5"/><path d="M3.22 13H9.5l.5-1 2 4.5 2-7 1.5 3.5h5.27"/></svg>
+                    <span>Health</span>
+                  </a>
+                  <span id="health-nav-badge" class="menu-badge">...</span>
+                </li>
+                <li data-sidebar="menu-item">
+                  <a data-sidebar="menu-button" href="https://ghost.org/help?utm_source=admin&amp;utm_campaign=help" rel="noopener noreferrer" target="_blank">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                      <circle cx="12" cy="12" r="10"></circle>
+                      <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+                      <path d="M12 17h.01"></path>
+                    </svg>
+                    <span>Help</span>
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="sidebar-bottom">
+          <div data-sidebar="group">
+            <div data-sidebar="group-content">
+              <ul data-sidebar="menu">
+                <li data-sidebar="menu-item">
+                  <a data-sidebar="menu-button" href="https://github.com/ifrederico/ghost-mail-bridge" rel="noopener noreferrer" target="_blank">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-github-icon lucide-github" aria-hidden="true">
+                      <path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4"></path>
+                      <path d="M9 18c-4.51 2-5-2-7-2"></path>
+                    </svg>
+                    <span>GitHub</span>
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <main class="main-shell">
+      <main class="main-root">
+        <div class="page-wrap">
+          <div class="page-grid">
+            <div class="page-content">
+              <header class="page-header" id="overview">
+                <div class="page-header-row">
+                  <h1>Email delivery</h1>
+                  <div class="page-header-meta">
+                    <span class="meta-site">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="meta-globe" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"></path><path d="M2 12h20"></path></svg>
+                      <span class="muted-link">yourdomain.com</span>
+                    </span>
+                  </div>
+                </div>
+              </header>
+
+              <div class="page-navbar">
+                <div class="page-tabs">
+                  <button type="button" class="tab-btn active" data-tab-target="overview">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-gauge-icon lucide-gauge" aria-hidden="true"><path d="m12 14 4-4"/><path d="M3.34 19a10 10 0 1 1 17.32 0"/></svg>
+                    <span>Overview</span>
+                  </button>
+                  <button type="button" class="tab-btn" data-tab-target="delivery">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-mail-check-icon lucide-mail-check" aria-hidden="true"><path d="M22 13V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v12c0 1.1.9 2 2 2h8"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/><path d="m16 19 2 2 4-4"/></svg>
+                    <span>Delivery</span>
+                  </button>
+                  <button type="button" class="tab-btn" data-tab-target="failures">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-skull-icon lucide-skull" aria-hidden="true"><path d="m12.5 17-.5-1-.5 1h1z"/><path d="M15 22a1 1 0 0 0 1-1v-1a2 2 0 0 0 1.56-3.25 8 8 0 1 0-11.12 0A2 2 0 0 0 8 20v1a1 1 0 0 0 1 1z"/><circle cx="15" cy="12" r="1"/><circle cx="9" cy="12" r="1"/></svg>
+                    <span>Failures &amp; complaints</span>
+                  </button>
+                  <button type="button" class="tab-btn" data-tab-target="suppressions">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-fire-extinguisher-icon lucide-fire-extinguisher" aria-hidden="true"><path d="M15 6.5V3a1 1 0 0 0-1-1h-2a1 1 0 0 0-1 1v3.5"/><path d="M9 18h8"/><path d="M18 3h-3"/><path d="M11 3a6 6 0 0 0-6 6v11"/><path d="M5 13h4"/><path d="M17 10a4 4 0 0 0-8 0v10a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2Z"/></svg>
+                    <span>Suppressions</span>
+                  </button>
+                </div>
+                <div class="page-actions">
+                  <label class="sr-only" for="period-select">Period</label>
+                  <div class="period-select-wrap">
+                    <svg class="period-select-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                      <path d="M8 2v4"></path>
+                      <path d="M16 2v4"></path>
+                      <rect width="18" height="18" x="3" y="4" rx="2"></rect>
+                      <path d="M3 10h18"></path>
+                    </svg>
+                    <select id="period-select" class="field-select period-select" aria-label="Select period">
+                      <option value="24h">Last 24 hours</option>
+                      <option value="7d">Last 7 days</option>
+                      <option value="30d" selected>Last 30 days</option>
+                      <option value="90d">Last 90 days</option>
+                      <option value="ytd">Year to date</option>
+                      <option value="12m">Last 12 months</option>
+                      <option value="all">All time</option>
+                    </select>
+                    <svg class="period-select-caret" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                      <path d="m6 9 6 6 6-6"></path>
+                    </svg>
+                  </div>
+                </div>
+              </div>
+
+              <section class="tab-panel active" data-tab-panel="overview">
+                <section class="metrics" id="overview-cards"></section>
+
+                <section class="panel">
+                  <div class="panel-head">
+                    <span>Status and alerts</span>
+                    <span id="overview-meta" class="panel-meta"></span>
+                  </div>
+                  <ul id="overview-alerts" class="status-list"></ul>
+                </section>
+
+                <section class="panel">
+                  <div class="panel-head">
+                    <span>Recent failures preview</span>
+                  </div>
+                  <table>
+                    <thead>
+                      <tr>
+                        <th>Time</th>
+                        <th>Event</th>
+                        <th>Recipient</th>
+                        <th>Reason</th>
+                      </tr>
+                    </thead>
+                    <tbody id="overview-failure-rows"></tbody>
+                  </table>
+                </section>
+              </section>
+
+              <section class="tab-panel" data-tab-panel="delivery">
+                <section class="panel delivery-insights" id="delivery-insights"></section>
+                <section class="panel">
+                  <table>
+                    <thead>
+                      <tr>
+                        <th>
+                          <span class="th-title" id="delivery-timeline-title">Timeline</span>
+                          <span class="th-subtitle" id="delivery-timeline-meta">Last 30 days</span>
+                        </th>
+                        <th class="align-right">Sent</th>
+                        <th class="align-right">Opened</th>
+                        <th class="align-right">Clicked</th>
+                        <th class="align-right">Failed</th>
+                      </tr>
+                    </thead>
+                    <tbody id="delivery-rows"></tbody>
+                  </table>
+                </section>
+              </section>
+
+              <section class="tab-panel" data-tab-panel="failures">
+                <section class="panel section-insights" id="failure-insights"></section>
+
+                <section class="panel">
+                  <div class="panel-head">
+                    <span>Failure reasons</span>
+                    <div class="panel-actions">
+                      <div class="select-wrap">
+                        <svg class="select-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                          <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
+                        </svg>
+                        <select id="failure-filter" class="field-select styled-select">
+                          <option value="all">All</option>
+                          <option value="failed">Failed</option>
+                          <option value="complained">Complained</option>
+                        </select>
+                        <svg class="select-caret" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                          <path d="m6 9 6 6 6-6"></path>
+                        </svg>
+                      </div>
+                    </div>
+                  </div>
+                  <table>
+                    <thead>
+                      <tr>
+                        <th>Reason</th>
+                        <th>Count</th>
+                      </tr>
+                    </thead>
+                    <tbody id="failure-reason-rows"></tbody>
+                  </table>
+                </section>
+
+                <section class="panel">
+                  <div class="panel-head">
+                    <span>Recent failures and complaints</span>
+                  </div>
+                  <table>
+                    <thead>
+                      <tr>
+                        <th>Time</th>
+                        <th>Event</th>
+                        <th>Recipient</th>
+                        <th>Reason</th>
+                        <th>Message ID</th>
+                      </tr>
+                    </thead>
+                    <tbody id="failure-rows"></tbody>
+                  </table>
+                </section>
+              </section>
+
+              <section class="tab-panel" data-tab-panel="suppressions">
+                <section class="panel section-insights" id="suppression-insights"></section>
+                <section class="panel">
+                  <div class="panel-head">
+                    <span>Suppression list</span>
+                    <div class="panel-actions">
+                      <div class="select-wrap">
+                        <svg class="select-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                          <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
+                        </svg>
+                        <select id="suppression-filter" class="field-select styled-select">
+                          <option value="all">All</option>
+                          <option value="bounces">Bounces</option>
+                          <option value="complaints">Complaints</option>
+                          <option value="unsubscribes">Unsubscribes</option>
+                        </select>
+                        <svg class="select-caret" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                          <path d="m6 9 6 6 6-6"></path>
+                        </svg>
+                      </div>
+                    </div>
+                  </div>
+                  <table>
+                    <thead>
+                      <tr>
+                        <th>Email</th>
+                        <th>Type</th>
+                        <th>Reason</th>
+                        <th>Created</th>
+                      </tr>
+                    </thead>
+                    <tbody id="suppression-rows"></tbody>
+                  </table>
+                </section>
+              </section>
+
+              <section class="tab-panel" data-tab-panel="health">
+                <section class="panel">
+                  <div class="panel-head">
+                    <span>Health</span>
+                    <span id="health-meta" class="panel-meta"></span>
+                  </div>
+                  <ul class="status-list">
+                    <li class="status-item">
+                      <span>System status</span>
+                      <span id="health-status-pill" class="status-pill">unknown</span>
+                    </li>
+                  </ul>
+                </section>
+
+                <section class="panel">
+                  <div class="panel-head">
+                    <span>Core signals</span>
+                  </div>
+                  <table>
+                    <thead>
+                      <tr>
+                        <th>Signal</th>
+                        <th>Value</th>
+                      </tr>
+                    </thead>
+                    <tbody id="health-rows"></tbody>
+                  </table>
+                </section>
+
+                <section class="panel">
+                  <div class="panel-head">
+                    <span>Integration checks</span>
+                  </div>
+                  <table>
+                    <thead>
+                      <tr>
+                        <th>Check</th>
+                        <th>Status</th>
+                        <th>Detail</th>
+                      </tr>
+                    </thead>
+                    <tbody id="health-check-rows"></tbody>
+                  </table>
+                </section>
+              </section>
+            </div>
+          </div>
+        </div>
+      </main>
+    </main>
+  </div>
+
+  <nav class="mobile-bottom-nav" aria-label="Mobile mail navigation">
+    <div class="mobile-bottom-nav-grid">
+      <a class="mobile-bottom-nav-item active" href="#overview" data-tab-target="overview" aria-label="Overview">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M3 10.75 12 3l9 7.75"></path>
+          <path d="M5 10v10h14V10"></path>
+        </svg>
+        <span class="sr-only">Overview</span>
+      </a>
+      <a class="mobile-bottom-nav-item" href="#delivery" data-tab-target="delivery" aria-label="Delivery">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="m4 4 16 0 0 16 -16 0z"></path>
+          <path d="m20 6 -8 6 -8 -6"></path>
+        </svg>
+        <span class="sr-only">Delivery</span>
+      </a>
+      <a class="mobile-bottom-nav-item" href="#failures" data-tab-target="failures" aria-label="Failures and complaints">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="m12 9 0 4"></path>
+          <path d="m12 17 0.01 0"></path>
+          <path d="m10.29 3.86 -8.23 14.27A2 2 0 0 0 3.79 21h16.42a2 2 0 0 0 1.73 -2.87L13.71 3.86a2 2 0 0 0 -3.42 0z"></path>
+        </svg>
+        <span class="sr-only">Failures and complaints</span>
+      </a>
+      <a class="mobile-bottom-nav-item" href="#/health" data-tab-target="health" aria-label="Health">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M2 9.5a5.5 5.5 0 0 1 9.591-3.676.56.56 0 0 0 .818 0A5.49 5.49 0 0 1 22 9.5c0 2.29-1.5 4-3 5.5l-5.492 5.313a2 2 0 0 1-3 .019L5 15c-1.5-1.5-3-3.2-3-5.5"></path>
+          <path d="M3.22 13H9.5l.5-1 2 4.5 2-7 1.5 3.5h5.27"></path>
+        </svg>
+        <span class="sr-only">Health</span>
+      </a>
+    </div>
+  </nav>
+
+  <script>
+    window.__GMB_RUNTIME__ = __GMB_RUNTIME_JSON__;
+  </script>
+  <script src="./app.js" defer></script>
+</body>
+</html>
